@@ -1,0 +1,49 @@
+version: '3'
+services:
+    server:
+        container_name: server
+        build:
+            context: ./app/server
+            dockerfile: Dockerfile
+        volumes:
+            - ./app/server/code:/app
+        # ports:
+        #     - "9990:9991"
+        depends_on:
+            - postgres
+        hostname: redsoft
+        tty: true
+    
+    client:
+        container_name: client
+        build:
+            context: ./app/client
+            dockerfile: Dockerfile
+        volumes:
+            - ./app/client/code:/app
+        # ports:
+        #     - "9991:9991"
+        depends_on:
+            - postgres
+        tty: true
+        
+        
+        #command: "python3.7 server.py"
+    
+    
+    postgres:
+        container_name: postgres
+        restart: always
+        image: postgres:12.2
+        environment:
+          - POSTGRES_DB=storage
+          - POSTGRES_USER=admin
+          - POSTGRES_PASSWORD=12345
+        ports:
+          - "5432:5432"
+        volumes: 
+          - ./app/pg/data:/var/lib/postgresql/data
+          # - ./app/pg/dump:/var/dump
+          #- ./app/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+        #command: postgres -c config_file=/etc/postgresql/postgresql.conf
+        hostname: postgres
